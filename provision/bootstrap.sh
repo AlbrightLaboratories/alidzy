@@ -31,7 +31,20 @@ forced="[[ -n \"$want\" ]]"
 overall_fail=0
 reboot_requested=0
 
-step_hash() { sha256sum "$1" | cut -c1-16; }
+# Hash a step script PLUS any assets listed in steps/<n>.deps (paths relative to
+# provision/). Without this, editing an asset (e.g. rgb/meteor.py) doesn't change
+# the step hash and the change silently never deploys.
+step_hash() {
+  local f="$1" n; n="$(basename "$f" | grep -oE '^[0-9]+')"
+  {
+    cat "$f"
+    if [[ -f "$HERE/steps/$n.deps" ]]; then
+      while IFS= read -r dep; do
+        [[ -n "$dep" && -f "$HERE/$dep" ]] && cat "$HERE/$dep"
+      done < "$HERE/steps/$n.deps"
+    fi
+  } | sha256sum | cut -c1-16
+}
 
 for f in "$HERE"/steps/*.sh; do
   n="$(basename "$f" | grep -oE '^[0-9]+')"

@@ -23,6 +23,7 @@ re-imaging mainly refreshes the **offline fallback** and pins a known-good basel
 ## Unreleased — on `main` (pulled live by the box)
 
 ### 2026-07-02 — fans still dark: hub zones were 0 LEDs
+- 🔧 **Step-asset deps now hashed** (steps/<n>.deps manifests): editing rgb/meteor.py did NOT re-run step 40 (only the step script was hashed), so the zone-resize fix never deployed. Added 40.deps → asset edits now redeploy.
 - 🔧 **Operator reports no red fans despite "animating" log.** Root cause hypothesis:
   OpenRGB models the Lian Li hub's 4 channels as **resizable zones defaulting to 0 LEDs**;
   the animator was driving an empty LED list (software green, fans dark). `meteor.py` now
