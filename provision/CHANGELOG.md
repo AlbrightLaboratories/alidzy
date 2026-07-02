@@ -22,6 +22,17 @@ re-imaging mainly refreshes the **offline fallback** and pins a known-good basel
 
 ## Unreleased — on `main` (pulled live by the box)
 
+### 2026-07-02 — 🎉 FANS RED: Lian Li hub detected, meteor on the fans
+- 🧪 **OpenRGB 1.0rc3 detects the hub:** device list now shows `Lian Li Uni Hub - SL
+  Infinity`, and the animator logs `animating meteor on: ['Lian Li Uni Hub - SL Infinity']`
+  — the red meteor runs on the actual fans (operator visual confirm pending).
+- 🔧 **gpg idempotency:** step 70 failed on re-run (`gpg: cannot open '/dev/tty'` —
+  overwrite prompt with no tty). All `gpg --dearmor` now `--batch --yes` (steps 20/70).
+- 🔧 **Storage hardening:** `30-storage.sh` now skips **removable/USB** disks (it once
+  picked the USB stick and wrote a garbage `/data` fstab entry with an ISO-date UUID) and
+  **removes stale fstab entries** whose UUID no longer exists. Seagate remains physically
+  absent from `lsblk` — hardware check (SATA data + power) still needed at the box.
+
 ### 2026-07-02 — RGB + storage fixes (iterating)
 - 🧪 **OpenRGB install fixed.** OpenRGB is **not in Ubuntu's repos** (`E: Unable to locate
   package openrgb`), so the meteor service never started. Now installs the upstream `.deb`

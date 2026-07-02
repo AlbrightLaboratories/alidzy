@@ -37,7 +37,7 @@ fi
 # Optional container toolkit for GPU pods (safe to run pre-reboot).
 if [[ "${INSTALL_NVIDIA_CONTAINER_TOOLKIT:-false}" == "true" ]] && ! command -v nvidia-ctk >/dev/null; then
   curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey \
-    | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg 2>/dev/null || true
+    | gpg --batch --yes --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg 2>/dev/null || true
   curl -fsSL https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list \
     | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' \
     > /etc/apt/sources.list.d/nvidia-container-toolkit.list 2>/dev/null || true
