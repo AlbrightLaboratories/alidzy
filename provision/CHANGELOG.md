@@ -22,6 +22,16 @@ re-imaging mainly refreshes the **offline fallback** and pins a known-good basel
 
 ## Unreleased — on `main` (pulled live by the box)
 
+### 2026-07-02 — software all-green; smallest-LLM phase begins
+- 🧪 **VERIFY marker path fixed** (checked old `/var/lib/compute-monster-provisioned`; new
+  bootstrap writes `/var/lib/compute-monster/provisioned`). Software checks now **all
+  green** — the only failures are the 2 `/data` checks (Seagate physically absent; needs
+  SATA/power cabling at the box; auto-mounts when it appears).
+- 🔧 **Step 80: Ollama + smallest-model review.** Installs Ollama, pulls **qwen2.5:0.5b**
+  (~0.4 GB, absolute floor) and **llama3.2:1b** (~1.3 GB, recommended smallest-useful),
+  validates each actually generates on the RTX 3060 Ti (8 GB), records the review to
+  `/var/lib/compute-monster/model-review.txt`; VERIFY gains an LLM-serving check.
+
 ### 2026-07-02 — 🎉 FANS RED: Lian Li hub detected, meteor on the fans
 - 🧪 **OpenRGB 1.0rc3 detects the hub:** device list now shows `Lian Li Uni Hub - SL
   Infinity`, and the animator logs `animating meteor on: ['Lian Li Uni Hub - SL Infinity']`

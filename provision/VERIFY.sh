@@ -46,7 +46,18 @@ if [ -n "$NIC" ] && command -v ethtool >/dev/null && ethtool "$NIC" 2>/dev/null 
   pass "WOL=g on $NIC (MAC $(cat /sys/class/net/$NIC/address))"
 else fail "WOL not set to g (check BIOS Resume By PCI-E + ethtool)"; fi
 
-hdr "7. kubernetes prereqs"
+hdr "7. LLM serving (ollama, smallest model)"
+if systemctl is-active --quiet ollama && [ -s /var/lib/compute-monster/model-review.txt ]; then
+  if grep -q "GENERATES" /var/lib/compute-monster/model-review.txt; then
+    pass "$(grep -E 'SMALLEST-OK|RECOMMENDED' /var/lib/compute-monster/model-review.txt | head -1)"
+  else
+    fail "ollama up but no model generated output"
+  fi
+else
+  fail "ollama not serving / model review missing"
+fi
+
+hdr "8. kubernetes prereqs"
 [ -z "$(swapon --show)" ] && pass "swap off" || fail "swap still on"
 systemctl is-active --quiet containerd && pass "containerd running" || fail "containerd down"
 command -v kubeadm >/dev/null && pass "$(kubeadm version -o short 2>/dev/null)" || fail "kubeadm missing"
