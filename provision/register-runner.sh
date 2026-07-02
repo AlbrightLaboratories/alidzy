@@ -20,17 +20,27 @@ DIR="${RUNNER_DIR:-$HOME/actions-runner}"
 VER="$(curl -fsSL https://api.github.com/repos/actions/runner/releases/latest | grep -oE '"tag_name": *"v[0-9.]+"' | grep -oE '[0-9.]+' | head -1)"
 [[ -n "$VER" ]] || VER="2.320.0"
 
+echo "Runner version: v${VER}"
 mkdir -p "$DIR"; cd "$DIR"
 if [[ ! -x ./run.sh ]]; then
+  echo "Downloading actions runner..."
   curl -fsSL -o runner.tar.gz \
     "https://github.com/actions/runner/releases/download/v${VER}/actions-runner-linux-x64-${VER}.tar.gz"
   tar xzf runner.tar.gz && rm runner.tar.gz
 fi
 
+# A fresh minimal Ubuntu server lacks the runner's .NET deps (libicu, etc.);
+# without these config.sh fails. installdependencies.sh needs root.
+echo "Installing runner OS dependencies (needs sudo)..."
+sudo ./bin/installdependencies.sh
+
+echo "Configuring runner (repo=$REPO_URL name=$NAME labels=$LABELS)..."
 ./config.sh --unattended --replace \
   --url "$REPO_URL" --token "$RUNNER_TOKEN" \
   --name "$NAME" --labels "$LABELS"
 
+echo "Installing + starting the runner service..."
 sudo ./svc.sh install "$USER"
 sudo ./svc.sh start
-echo "Runner '$NAME' registered + running (labels: $LABELS)."
+sudo ./svc.sh status || true
+echo "DONE — Runner '$NAME' registered + running (labels: $LABELS)."
