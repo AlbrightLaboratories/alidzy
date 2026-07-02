@@ -22,6 +22,21 @@ re-imaging mainly refreshes the **offline fallback** and pins a known-good basel
 
 ## Unreleased — on `main` (pulled live by the box)
 
+### 2026-07-02 — CI runner privilege bootstrap
+- 🧪 **Passwordless sudo for the runner user.** CI runs as `a_guy` and provisioning needs
+  root; without a NOPASSWD grant, `sudo` in CI failed ("a password is required"). Fixed
+  structurally so no human types it again: root provisioning step `05-runner-sudo.sh`
+  (validated with `visudo -c`), the ISO autoinstall late-commands, and `register-runner.sh`.
+  On the *current* box it was applied manually once (the privilege-bootstrap can't grant
+  itself without an existing root/password — see note below).
+- 🔧 **Reboot-safe CI.** `provision-verify` kicks provisioning as a detached transient unit
+  (`systemd-run --no-block`) so the NVIDIA reboot can't kill the job, then reports VERIFY
+  state + dumps logs for remote iteration.
+
+> **Why the sudo grant needs one manual run on an already-installed box:** the runner is
+> unprivileged and cannot grant itself root without root; the only no-password root contexts
+> are the installer and the root provisioning service, which future boxes use automatically.
+
 ### 2026-07-02 — root-cause fix for the failed first install
 - 🔧 **Resumable, fault-tolerant, reboot-aware bootstrap.** A single failing step no longer
   aborts the whole run (was `set -e`); steps record `/var/lib/compute-monster/steps/<n>.done`
