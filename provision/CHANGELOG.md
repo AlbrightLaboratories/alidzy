@@ -27,6 +27,11 @@ re-imaging mainly refreshes the **offline fallback** and pins a known-good basel
   package openrgb`), so the meteor service never started. Now installs the upstream `.deb`
   (`openrgb_0.9_amd64_bookworm` — runs on noble). Services now **active**; VERIFY reports
   "meteor animating". `step 40-openrgb.sh`.
+- 🔧 **Stale-marker bug: changed steps now re-run (hash-aware markers).** The resumable
+  bootstrap skipped any step with a `.done` marker even after the step's script changed —
+  so the 1.0rc3 upgrade in step 40 never executed (box stayed on 0.9; device list showed
+  4× Corsair RAM + Gigabyte RTX 3060 Ti + MSI B550-A PRO, **no Lian Li hub**). Markers now
+  store the step's sha256; edit a step → it re-runs. Legacy empty markers migrate cleanly.
 - 🔧 **Fans dark → OpenRGB version bump to 1.0rc3.** `lsusb` confirms the hub IS on the bus
   (`0cf2:a102 ENE Technology LianLi-SL-infinity-v1.4`), so it's not a cable — **OpenRGB 0.9
   simply lacks the SL-Infinity v1.4 detector** (it saw only the Corsair RAM). Switched

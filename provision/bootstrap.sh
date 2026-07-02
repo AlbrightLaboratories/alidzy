@@ -31,13 +31,18 @@ forced="[[ -n \"$want\" ]]"
 overall_fail=0
 reboot_requested=0
 
+step_hash() { sha256sum "$1" | cut -c1-16; }
+
 for f in "$HERE"/steps/*.sh; do
   n="$(basename "$f" | grep -oE '^[0-9]+')"
   name="$(basename "$f")"
+  h="$(step_hash "$f")"
+  # A step is "done" only if its marker matches the CURRENT script hash —
+  # editing a step re-runs it (stale .done markers froze old bugs in place).
   if [[ -n "$want" ]]; then
     [[ " $want " == *" $n "* ]] || continue
-  elif [[ -f "$STATE/steps/$n.done" ]]; then
-    echo "=== [$name] already done — skip ==="; continue
+  elif [[ -f "$STATE/steps/$n.done" && "$(cat "$STATE/steps/$n.done" 2>/dev/null)" == "$h" ]]; then
+    echo "=== [$name] already done (hash match) — skip ==="; continue
   fi
 
   echo "=== [$name] $(date -Is) ==="
@@ -45,7 +50,7 @@ for f in "$HERE"/steps/*.sh; do
   rc="${PIPESTATUS[0]}"
 
   if [[ "$rc" -eq 0 ]]; then
-    touch "$STATE/steps/$n.done"; echo "--- [$name] OK ---"
+    echo "$h" > "$STATE/steps/$n.done"; echo "--- [$name] OK ---"
   elif [[ "$rc" -eq "$REBOOT_SIGNAL" ]]; then
     echo "--- [$name] requests REBOOT to continue ---"; reboot_requested=1; break
   else
