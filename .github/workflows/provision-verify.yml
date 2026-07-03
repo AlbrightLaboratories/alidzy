@@ -34,6 +34,10 @@ jobs:
           export XDG_RUNTIME_DIR=/run/user/$(id -u)
           systemctl --user is-active lianli-daemon 2>&1 || true
           echo "--- storage ---"; lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT | head -8
+          echo "--- temperatures ---"
+          sensors 2>/dev/null | grep -E "Tctl|Tccd|edge|Composite|temp1" || true
+          nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader 2>/dev/null | sed 's/^/GPU: /;s/$/ C/' || true
+          echo "--- load ---"; uptime
 
       - uses: actions/upload-artifact@v4
         if: always()
