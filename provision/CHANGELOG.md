@@ -20,7 +20,25 @@ re-imaging mainly refreshes the **offline fallback** and pins a known-good basel
 
 ---
 
-## Unreleased — on `main` (pulled live by the box)
+## Release v1.0.0 — 2026-07-03 — "fans red, box green" (operator-accepted)
+
+**The compute-monster is fully operational and operator-confirmed.** Everything below is
+🧪 tested on the hardware and reproducible from a fresh install via the self-healing
+provisioner (steps 05–80):
+
+| Component | State |
+|---|---|
+| Ubuntu 24.04 unattended install (wipes NVMe only) | 🧪 |
+| NVIDIA driver (RTX 3060 Ti), reboot-aware install | 🧪 |
+| **Fans: pure-red Meteor on all 4 hub groups (lianli-linux)** — "perfect" per operator | 🧪 |
+| Smallest-LLM serving: qwen2.5:0.5b floor / llama3.2:1b recommended (Ollama) | 🧪 |
+| Wake-on-LAN (enp42s0), sensors, swap-off, containerd, kubeadm v1.31 + max-pods 160 | 🧪 |
+| CI loop: self-hosted runner + provision-verify workflow | 🧪 |
+| Seagate 2TB `/data` | ⏸ parked — drive not yet installed; auto-mounts when cabled |
+
+### 2026-07-03 — pure-red tuning (operator: "perfect!")
+- 🧪 Pink wash eliminated: all 4 Meteor color slots set to pure `[255,0,0]` (the old
+  `#DD1713` tail carried green/blue and interpolated pink on some blades).
 
 ### 2026-07-03 — 🎉🧪 FANS CONFIRMED: red meteor running (operator-verified)
 - 🧪 **Operator visually confirmed the fans run the red meteor** (docs/09 profile:

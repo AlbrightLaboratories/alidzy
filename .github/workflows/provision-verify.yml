@@ -1,8 +1,6 @@
 name: provision-verify
-# Runs ON the compute-monster box (self-hosted). Reboot-safe: it kicks the
-# self-healing provisioner as a DETACHED transient unit (so the NVIDIA reboot
-# doesn't kill this job), then reports current VERIFY state + dumps logs so we
-# can iterate remotely.
+# Runs ON the compute-monster box (self-hosted). Kicks the self-healing
+# provisioner as a detached unit (reboot-safe), then reports VERIFY state.
 on:
   workflow_dispatch:
   push:
@@ -26,45 +24,16 @@ jobs:
       - name: Verify current state (non-fatal)
         run: sudo bash /opt/compute-monster/provision/VERIFY.sh || true
 
-      - name: Dump provisioning logs
+      - name: Health snapshot
         if: always()
         run: |
-          echo "===== per-step logs ====="
-          sudo tail -n +1 /opt/compute-monster/provision/log/* 2>/dev/null || echo "(none yet)"
-          echo "===== service journal ====="
-          sudo journalctl -u compute-monster-provision -u cm-provision --no-pager 2>/dev/null | tail -200 || true
-          echo "===== nvidia / rgb quick check ====="
-          nvidia-smi -L 2>&1 || echo "nvidia-smi: not ready"
-          sudo openrgb --list-devices 2>&1 | head -120 || echo "openrgb: not installed yet"
-          echo "--- meteor targets ---"
-          sudo journalctl -u openrgb-meteor --no-pager 2>/dev/null | grep -iE "animating|error|no rgb|zone|mode" | tail -30 || true
-          echo "--- RGB state (READ-ONLY: no more writes from CI) ---"
-          sudo openrgb --list-devices 2>&1 | grep -A3 -i "lian" | head -8 || true
-          echo "===== block devices / storage ====="
-          lsblk -o NAME,SIZE,FSTYPE,LABEL,UUID,MOUNTPOINT 2>&1 || true
-          echo "--- fstab data ---"; grep -i data /etc/fstab 2>&1 || true
-          echo "--- rgb services ---"; systemctl is-active openrgb-server openrgb-meteor 2>&1 || true
-          echo "===== USB / Lian Li hub detection ====="
-          openrgb --version 2>&1 | head -2 || true
-          lsusb 2>&1 || true
-          echo "--- Lian Li vid 0cf2 ? ---"; lsusb -d 0cf2: 2>&1 || echo "no 0cf2 device on USB bus"
-          echo "===== kernel/USB driver state for the hub (operator asked) ====="
-          echo "--- usb kernel modules ---"; lsmod | grep -E "usbhid|hid_generic|^hid " || echo "hid modules builtin"
-          echo "--- hub interface driver binding ---"
-          for d in /sys/bus/usb/devices/*; do
-            [[ -f "$d/idVendor" ]] && [[ "$(cat $d/idVendor)" == "0cf2" ]] && echo "hub at $(basename $d): $(cat $d/product 2>/dev/null)" && ls "$d/" | grep -E "^[0-9]" | while read i; do echo "  iface $i -> driver: $(basename $(readlink -f /sys/bus/usb/devices/$i/driver 2>/dev/null) 2>/dev/null || echo NONE)"; done
-          done
-          echo "--- hidraw nodes + perms ---"; ls -la /dev/hidraw* 2>&1
-          echo "--- dmesg for the hub ---"; sudo dmesg | grep -iE "0cf2|lianli|ENE Tech" | tail -8 || echo "(nothing)"
-          echo "--- lianli-daemon state (as runner user, native) ---"
+          echo "--- recent step logs ---"
+          sudo journalctl -u cm-provision --no-pager 2>/dev/null | tail -30 || true
+          echo "--- gpu ---"; nvidia-smi -L 2>&1 || true
+          echo "--- lianli-daemon ---"
           export XDG_RUNTIME_DIR=/run/user/$(id -u)
-          systemctl --user daemon-reload 2>&1 || true
-          systemctl --user enable --now lianli-daemon.service 2>&1 || true
-          sleep 6
           systemctl --user is-active lianli-daemon 2>&1 || true
-          systemctl --user status lianli-daemon --no-pager 2>&1 | head -8 || true
-          journalctl --user -u lianli-daemon --no-pager 2>&1 | tail -20 || true
-          echo "--- lianli config ---"; cat ~/.config/lianli/config.json 2>/dev/null || echo "(no config yet)"
+          echo "--- storage ---"; lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT | head -8
 
       - uses: actions/upload-artifact@v4
         if: always()
