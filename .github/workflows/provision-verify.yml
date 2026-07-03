@@ -38,6 +38,11 @@ jobs:
           sensors 2>/dev/null | grep -E "Tctl|Tccd|edge|Composite|temp1" || true
           nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader 2>/dev/null | sed 's/^/GPU: /;s/$/ C/' || true
           echo "--- load ---"; uptime
+          echo "--- network identity ---"
+          hostname
+          ip -4 -o addr show scope global | awk '{print $2": "$4}'
+          ip route show default | head -1
+          echo "MAC: $(cat /sys/class/net/$(ip -o route get 1.1.1.1 | awk '{for(i=1;i<=NF;i++)if($i=="dev")print $(i+1)}')/address 2>/dev/null)"
 
       - uses: actions/upload-artifact@v4
         if: always()
