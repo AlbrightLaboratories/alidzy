@@ -16,7 +16,7 @@ else
 fi
 
 hdr "1. identity / OS"
-[ "$(hostnamectl --static)" = "compute-monster" ] && pass "hostname" || fail "hostname != compute-monster"
+[ "$(hostnamectl --static)" = "alidzy" ] && pass "hostname" || fail "hostname != alidzy"
 timedatectl show -p Timezone --value | grep -q "America/New_York" && pass "timezone Eastern" || fail "timezone"
 id a_guy >/dev/null 2>&1 && pass "user a_guy" || fail "user a_guy missing"
 

@@ -1,7 +1,9 @@
 <!-- toc-backlink -->
 > 📚 **Master TOC:** [Org-wide repo index](https://github.com/AlbrightLaboratories/daxxon-ai-gpu-01/issues/17) — auto-updated every 15 min from this repo's commit stream. No manual entry needed; just write commit subjects that read well as one-line bullets.
 
-# compute-monster
+# Alidzy
+
+> Renamed from **compute-monster** on 2026-07-03 (repo + hostname `alidzy`). Old URLs redirect.
 
 **Purpose:** consolidate and retire three aging cluster nodes — **worker-07**, **worker-06**, and **worker-04** — into a single, higher-density "compute monster" workstation. The new box absorbs the workloads currently spread across those three workers so they can be powered down, stripped, and removed from the cluster.
 

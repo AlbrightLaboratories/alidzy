@@ -8,7 +8,7 @@ set -uo pipefail
 for c in /opt/compute-monster/provision/config.env /opt/compute-monster-provision/config.env; do
   [[ -f "$c" ]] && { source "$c"; break; }
 done
-REPO_URL="${REPO_URL:-https://github.com/AlbrightLaboratories/compute-monster.git}"
+REPO_URL="${REPO_URL:-https://github.com/AlbrightLaboratories/alidzy.git}"
 REPO_BRANCH="${REPO_BRANCH:-main}"
 REPO_DIR="${REPO_DIR:-/opt/compute-monster}"
 

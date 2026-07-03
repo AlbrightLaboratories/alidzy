@@ -12,6 +12,12 @@ apt-get install -y \
 
 if [[ -n "${HOSTNAME_WANT:-}" && "$(hostnamectl --static)" != "$HOSTNAME_WANT" ]]; then
   hostnamectl set-hostname "$HOSTNAME_WANT"
+  # keep /etc/hosts in sync so sudo doesn't warn "unable to resolve host"
+  if grep -qE "^127\.0\.1\.1" /etc/hosts; then
+    sed -i "s/^127\.0\.1\.1.*/127.0.1.1 $HOSTNAME_WANT/" /etc/hosts
+  else
+    echo "127.0.1.1 $HOSTNAME_WANT" >> /etc/hosts
+  fi
   echo "hostname -> $HOSTNAME_WANT"
 fi
 

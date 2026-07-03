@@ -8,7 +8,7 @@
 #      RUNNER_TOKEN=<token> bash provision/register-runner.sh
 set -euo pipefail
 
-REPO_URL="${REPO_URL_HTTP:-https://github.com/AlbrightLaboratories/compute-monster}"
+REPO_URL="${REPO_URL_HTTP:-https://github.com/AlbrightLaboratories/alidzy}"
 : "${RUNNER_TOKEN:?set RUNNER_TOKEN=... (gh api ... registration-token -q .token)}"
 LABELS="${LABELS:-compute-monster}"
 NAME="${RUNNER_NAME:-compute-monster}"

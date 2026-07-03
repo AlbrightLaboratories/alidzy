@@ -9,7 +9,7 @@ on:
 
 jobs:
   provision:
-    runs-on: [self-hosted, compute-monster]
+    runs-on: [self-hosted, alidzy]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4

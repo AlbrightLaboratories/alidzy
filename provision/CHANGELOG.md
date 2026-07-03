@@ -22,6 +22,14 @@ re-imaging mainly refreshes the **offline fallback** and pins a known-good basel
 
 ## Unreleased — post-v1.0.0
 
+### 2026-07-03 — rename: compute-monster → Alidzy
+- 🔧 Repo renamed to **AlbrightLaboratories/alidzy** (GitHub redirects old URLs; box's
+  git pulls unaffected). Runner gained the `alidzy` label; workflow targets it.
+- 🔧 Hostname → **alidzy** (lowercase — k8s RFC1123) via step 10 (now re-runs on
+  config.env changes via `10.deps`; also syncs /etc/hosts). VERIFY + ISO seed updated.
+- 📌 Internal paths (`/opt/compute-monster`, service names) intentionally kept for now —
+  renaming them on a live box is churn without benefit; revisit at the next clean install.
+
 ### image-005 — 2026-07-03 (current restore ISO)
 - 📀 v1.0.0 baseline + step 85 (160W GPU cap + train/serve timers). Exactly matches the
   running box. sha256 `dd24242a9981d59b729e545d48b6c2b03a0f7e6e09802da2a9ba9592aeb93b58`,
