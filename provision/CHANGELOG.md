@@ -22,6 +22,14 @@ re-imaging mainly refreshes the **offline fallback** and pins a known-good basel
 
 ## Unreleased — post-v1.0.0
 
+### 2026-07-03 — GitHub runner removed from the node
+- 🧪 Actions runner service uninstalled, files deleted, registration removed (0 runners);
+  provision-verify workflow retired. **Direct SSH (key-auth) is the ops channel now.**
+- 📌 Kept deliberately: the boot-time self-heal `git pull` (read-only https, public repo,
+  no credentials) — it is what makes the restore ISO always come up current. Say the word
+  to sever that too and go fully offline-from-GitHub.
+
+
 ### 2026-07-03 — rename: compute-monster → Alidzy
 - 🔧 Repo renamed to **AlbrightLaboratories/alidzy** (GitHub redirects old URLs; box's
   git pulls unaffected). Runner gained the `alidzy` label; workflow targets it.
