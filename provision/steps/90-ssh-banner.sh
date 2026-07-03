@@ -29,12 +29,12 @@ R=$'\033[0m'; B=$'\033[1m'; D=$'\033[2m'
 c(){ printf '\033[1;38;5;%sm' "$1"; }
 
 echo
-printf '%s' "$(c ${C[0]})";  echo '        _      _____  ____   ____   ______   __'
-printf '%s' "$(c ${C[1]})";  echo '       / \    |_   _||_  _| |  _ \ |__  / \ \ / /'
-printf '%s' "$(c ${C[2]})";  echo '      / _ \     | |    | |  | | | |  / /   \ V /'
-printf '%s' "$(c ${C[3]})";  echo '     / ___ \   _| |_  _| |_ | |_| | / /_    | |'
-printf '%s' "$(c ${C[4]})";  echo '    /_/   \_\ |_____||____| |____/ /____|   |_|'
-printf '%s' "$(c ${C[5]})";  echo '        ✦ ·  ⋆   ·        ── meteor online ──╼'
+printf '%s' "$(c ${C[0]})";  echo '        _    _     ___ ____  ________   __'
+printf '%s' "$(c ${C[1]})";  echo '       / \  | |   |_ _|  _ \|__  /\ \ / /'
+printf '%s' "$(c ${C[2]})";  echo '      / _ \ | |    | || | | | / /  \ V /'
+printf '%s' "$(c ${C[3]})";  echo '     / ___ \| |___ | || |_| |/ /_   | |'
+printf '%s' "$(c ${C[4]})";  echo '    /_/   \_\_____|___|____//____|  |_|'
+printf '%s' "$(c ${C[5]})";  echo '        ✦ ·  ⋆   ·     ── meteor online ──╼'
 printf '%s' "$R"
 echo
 printf "    ${B}⚡${R} DB · NAS · k8s node    ${B}🧠${R} gemma-class LLM serving\n"
