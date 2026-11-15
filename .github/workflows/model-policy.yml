@@ -1,11 +1,21 @@
 name: model-policy
 # Kanboard #1752: repo-wide model-policy guard (minimum Qwen 3.8), enforced.
+# Public repo: GitHub does not let a public repository call the private
+# claude-conventions reusable workflow/action, so the scanner is vendored
+# verbatim from claude-conventions@171d9b5 (workflows/model-policy/model_policy_scan.py)
+# into .github/model-policy/. Refresh it from claude-conventions when the policy changes.
 on:
   push: {branches: [main]}
   pull_request: {}
   workflow_dispatch: {}
 jobs:
   model-policy:
-    uses: AlbrightLaboratories/claude-conventions/.github/workflows/model-policy-check.yml@main
-    with: {mode: repo, enforce: true}
-    secrets: inherit
+    runs-on: albright-runners
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Model-policy scan (repo mode, enforced)
+        run: python .github/model-policy/model_policy_scan.py repo . --enforce
