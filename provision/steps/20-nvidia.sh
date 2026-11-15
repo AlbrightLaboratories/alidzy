@@ -10,6 +10,28 @@ set -uo pipefail
 source "$HERE/config.env"
 export DEBIAN_FRONTEND=noninteractive
 REBOOT_SIGNAL=75
+MODPROBE_DIR="${MODPROBE_DIR:-/etc/modprobe.d}"
+NVIDIA_MODULE_VERSION_FILE="${NVIDIA_MODULE_VERSION_FILE:-/sys/module/nvidia/version}"
+NVIDIA_OPERATOR_DRIVER_DIR="${NVIDIA_OPERATOR_DRIVER_DIR:-/run/nvidia/driver}"
+
+# --- Kanboard #1868: the GPU Operator owns the driver on a cluster node -> never install a host driver/toolkit.
+# NVIDIA's operator docs describe an operator-managed driver OR a preinstalled host driver, not both; the leftover apt
+# 595.84 stack made host nvidia-smi fail with "Driver/library version mismatch" against the loaded 580.178.04 module.
+if [[ "${NVIDIA_DRIVER_OWNER:-host}" == "operator" ]]; then
+  echo "NVIDIA driver owner = GPU Operator: not installing a host driver or container toolkit."
+  if [[ ! -f "$MODPROBE_DIR/blacklist-nouveau.conf" ]]; then
+    printf 'blacklist nouveau\noptions nouveau modeset=0\n' > "$MODPROBE_DIR/blacklist-nouveau.conf"
+    update-initramfs -u || true
+  fi
+  if [[ -r "$NVIDIA_MODULE_VERSION_FILE" ]]; then
+    echo "operator driver module loaded: $(cat "$NVIDIA_MODULE_VERSION_FILE")"
+  else
+    echo "operator driver not loaded yet (deployed by the GPU Operator after the node joins the cluster)."
+  fi
+  # nouveau already loaded: the driver container cannot load nvidia until a reboot (NVIDIA troubleshooting).
+  if lsmod 2>/dev/null | grep -q '^nouveau'; then echo "nouveau is loaded: reboot required." >&2; exit "$REBOOT_SIGNAL"; fi
+  exit 0
+fi
 
 if command -v nvidia-smi >/dev/null && nvidia-smi -L >/dev/null 2>&1; then
   echo "NVIDIA driver active:"; nvidia-smi -L; exit 0
@@ -29,8 +51,8 @@ if ! dpkg -l | grep -q '^ii  nvidia-driver-'; then
 fi
 
 # Ensure nouveau is blacklisted so the reboot brings up the NVIDIA driver.
-if [[ ! -f /etc/modprobe.d/blacklist-nouveau.conf ]]; then
-  printf 'blacklist nouveau\noptions nouveau modeset=0\n' > /etc/modprobe.d/blacklist-nouveau.conf
+if [[ ! -f "$MODPROBE_DIR/blacklist-nouveau.conf" ]]; then
+  printf 'blacklist nouveau\noptions nouveau modeset=0\n' > "$MODPROBE_DIR/blacklist-nouveau.conf"
   update-initramfs -u || true
 fi
 

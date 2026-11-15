@@ -22,6 +22,16 @@ re-imaging mainly refreshes the **offline fallback** and pins a known-good basel
 
 ## Unreleased — post-v1.0.0
 
+### 2026-11-15 — 🔧 NVIDIA driver: one owner (GPU Operator), no host 595 stack (Kanboard #1868)
+- 🔧 **Root cause of `nvidia-smi: Driver/library version mismatch`:** `steps/20-nvidia.sh` installed a host apt driver
+  (`ubuntu-drivers install` -> nvidia-driver-595-open 595.84) while the cluster's GPU Operator runs its own driver
+  container (580.178.04, the loaded module). NVIDIA documents operator-managed OR host-installed drivers, not both.
+- 🔧 `config.env` gains `NVIDIA_DRIVER_OWNER` (default `operator`). Step 20 now installs no host driver or container
+  toolkit in that mode (it only keeps nouveau blacklisted); `host` keeps the old standalone behaviour.
+- 🔧 Login banner reads the GPU temperature through `/run/nvidia/driver` and only ever prints a number.
+- 🔧 `VERIFY.sh` checks the operator driver first. New tests: `tests/test_20_nvidia_operator.sh` (CI, stubbed) and
+  `tests/node-nvidia-single-driver.sh` (on the node).
+
 ### 2026-07-03 — 🎉 MISSION: worker-07 retired; Alidzy joined the cluster
 - 🧪 **Alidzy joined** (kubeadm v1.31.14, bootstrap token minted via kubectl — no
   control-plane SSH needed; deps: conntrack/socat now implied for joins). Labeled

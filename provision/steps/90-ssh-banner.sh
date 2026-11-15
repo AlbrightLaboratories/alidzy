@@ -41,7 +41,11 @@ printf "    ${B}⚡${R} DB · NAS · k8s node    ${B}🧠${R} gemma-class LLM se
 printf "    ${D}Ryzen 7 5800X · 64GB DDR4 · RTX 3060 Ti (160W cap)${R}\n"
 printf "    ${D}Serve 07:00-01:00 (ollama) · Train 01:00-07:00${R}\n"
 cpu=$(sensors 2>/dev/null | awk '/Tctl/{gsub(/\+/,"");print $2; exit}')
-gpu=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader 2>/dev/null)
+# Kanboard #1868: the GPU Operator's driver container is the only driver; read it through its root, fall back to a host
+# nvidia-smi, and only ever print a number (a failing nvidia-smi writes its error to stdout and used to leak into the banner).
+gpu=$(chroot /run/nvidia/driver nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader 2>/dev/null \
+      || nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader 2>/dev/null)
+[[ "$gpu" =~ ^[0-9]+$ ]] || gpu=""
 printf "    🌡  CPU ${B}%s${R} · GPU ${B}%s°C${R} · %s\n" "${cpu:-n/a}" "${gpu:-n/a}" "$(uptime -p)"
 echo
 EOF

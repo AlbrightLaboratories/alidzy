@@ -21,9 +21,11 @@ timedatectl show -p Timezone --value | grep -q "America/New_York" && pass "timez
 id a_guy >/dev/null 2>&1 && pass "user a_guy" || fail "user a_guy missing"
 
 hdr "2. NVIDIA / RTX 3060 Ti"
-if command -v nvidia-smi >/dev/null && nvidia-smi -L >/dev/null 2>&1; then
-  pass "$(nvidia-smi -L | head -1)"
-else fail "nvidia-smi not working (reboot once if freshly installed)"; fi
+if out="$(chroot /run/nvidia/driver nvidia-smi -L 2>/dev/null)" && [ -n "$out" ]; then
+  pass "operator driver: $(echo "$out" | head -1)"
+elif command -v nvidia-smi >/dev/null && nvidia-smi -L >/dev/null 2>&1; then
+  pass "host driver: $(nvidia-smi -L | head -1)"
+else fail "no working nvidia-smi (operator /run/nvidia/driver or host); see tests/node-nvidia-single-driver.sh"; fi
 
 hdr "3. storage /data (Seagate)"
 mountpoint -q /data && pass "/data mounted ($(df -h --output=size /data | tail -1 | xargs))" || fail "/data not mounted"

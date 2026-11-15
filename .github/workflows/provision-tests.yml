@@ -1,0 +1,20 @@
+name: provision-tests
+# Kanboard #1868: unit tests for the provisioning steps (every external command is stubbed, no hardware needed).
+# Documented ubuntu-latest exception (CLAUDE.md §6): same reason as model-policy.yml, the org runner group does not
+# take jobs from public repositories and these tests need no secrets or cluster access.
+on:
+  push: {branches: [main]}
+  pull_request: {}
+  workflow_dispatch: {}
+jobs:
+  provision-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Shell syntax of every provisioning script
+        run: |
+          set -e
+          for f in provision/steps/*.sh provision/*.sh provision/tests/*.sh; do bash -n "$f"; done
+      - name: step 20 leaves the NVIDIA driver to the GPU Operator
+        run: bash provision/tests/test_20_nvidia_operator.sh
