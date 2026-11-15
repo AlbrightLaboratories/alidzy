@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Smallest-LLM serving on the RTX 3060 Ti (8 GB) via Ollama.
-# Candidates (smallest first): qwen2.5:0.5b (~0.4 GB), llama3.2:1b (~1.3 GB).
+# Candidates (smallest first): llama3.2:1b (~1.3 GB), qwen3:4b (~2.5 GB; the policy light model,
+# minimum Qwen 3.8 elsewhere, Kanboard #1752).
 # Pulls both, validates each actually generates, and records the review to
 # /var/lib/compute-monster/model-review.txt (used by VERIFY).
 set -uo pipefail
@@ -47,17 +48,17 @@ test_model() {
 }
 
 ok_smallest=1; ok_small=1
-test_model "qwen2.5:0.5b" && ok_smallest=0
-test_model "llama3.2:1b"  && ok_small=0
+test_model "llama3.2:1b" && ok_smallest=0
+test_model "qwen3:4b"    && ok_small=0
 
 {
   echo
   echo "GPU: $(nvidia-smi --query-gpu=name,memory.total --format=csv,noheader 2>/dev/null || echo unknown)"
   if [[ $ok_smallest -eq 0 ]]; then
-    echo "SMALLEST-OK: qwen2.5:0.5b (~0.4 GB) — absolute floor, runs fine"
+    echo "SMALLEST-OK: llama3.2:1b (~1.3 GB) — absolute floor, runs fine"
   fi
   if [[ $ok_small -eq 0 ]]; then
-    echo "RECOMMENDED-SMALLEST-USEFUL: llama3.2:1b (~1.3 GB) — better quality, trivial fit in 8 GB"
+    echo "RECOMMENDED-SMALLEST-USEFUL: qwen3:4b (~2.5 GB) — policy light model, better quality, fits in 8 GB"
   fi
 } >> "$REVIEW"
 
