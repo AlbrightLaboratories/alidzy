@@ -1,0 +1,11 @@
+name: model-policy
+# Kanboard #1752: repo-wide model-policy guard (minimum Qwen 3.8), enforced.
+on:
+  push: {branches: [main]}
+  pull_request: {}
+  workflow_dispatch: {}
+jobs:
+  model-policy:
+    uses: AlbrightLaboratories/claude-conventions/.github/workflows/model-policy-check.yml@main
+    with: {mode: repo, enforce: true}
+    secrets: inherit
