@@ -18,3 +18,5 @@ jobs:
           for f in provision/steps/*.sh provision/*.sh provision/tests/*.sh; do bash -n "$f"; done
       - name: step 20 leaves the NVIDIA driver to the GPU Operator
         run: bash provision/tests/test_20_nvidia_operator.sh
+      - name: step 12 installs only smartmontools, never upgrades
+        run: bash provision/tests/test_12_smartmontools.sh

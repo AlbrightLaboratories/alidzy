@@ -22,6 +22,9 @@ re-imaging mainly refreshes the **offline fallback** and pins a known-good basel
 
 ## Unreleased — post-v1.0.0
 
+### 2026-11-15 — 🔧 SMART tools on alidzy (Kanboard #1873)
+- 🔧 New `steps/12-smartmontools.sh`: installs only `smartmontools` (no recommends, no upgrade; 10-base.sh upgrades everything, which would pull kernel updates) and enables `smartd`. Tests: `tests/test_12_smartmontools.sh` (CI, stubbed) and `tests/node-smart.sh` (on the node).
+
 ### 2026-11-15 — 🔧 NVIDIA driver: one owner (GPU Operator), no host 595 stack (Kanboard #1868)
 - 🔧 **Root cause of `nvidia-smi: Driver/library version mismatch`:** `steps/20-nvidia.sh` installed a host apt driver
   (`ubuntu-drivers install` -> nvidia-driver-595-open 595.84) while the cluster's GPU Operator runs its own driver
