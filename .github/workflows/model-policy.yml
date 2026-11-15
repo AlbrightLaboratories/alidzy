@@ -10,7 +10,9 @@ on:
   workflow_dispatch: {}
 jobs:
   model-policy:
-    runs-on: albright-runners
+    # Documented ubuntu-latest exception (CLAUDE.md §6): the org runner group does not take jobs from
+    # public repositories (this job sat queued on albright-runners), and this step needs no secrets or cluster access.
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
