@@ -22,6 +22,9 @@ re-imaging mainly refreshes the **offline fallback** and pins a known-good basel
 
 ## Unreleased — post-v1.0.0
 
+### 2026-11-16 — 🔧 smartd alerts become files for the in-cluster relay (Kanboard #1873)
+- 🔧 New `steps/13-smartd-alerts.sh` + `files/smartd-alert-hook.sh`: smartd (monitoring with `-a`) hands each alert to `/etc/smartmontools/run.d/20-alert-file`, which writes one key=value file under `/var/lib/smartmontools/alerts` (newest 200 kept). The cluster-health `smart-watch` CronJob reads that directory read-only and relays new files to Telegram, so the bot token never sits on this host. Test: `tests/test_13_smartd_alerts.sh` (CI).
+
 ### 2026-11-15 — 🔧 SMART tools on alidzy (Kanboard #1873)
 - 🔧 New `steps/12-smartmontools.sh`: installs only `smartmontools` (no recommends, no upgrade; 10-base.sh upgrades everything, which would pull kernel updates) and enables `smartd`. Tests: `tests/test_12_smartmontools.sh` (CI, stubbed) and `tests/node-smart.sh` (on the node).
 

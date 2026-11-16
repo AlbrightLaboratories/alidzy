@@ -20,3 +20,5 @@ jobs:
         run: bash provision/tests/test_20_nvidia_operator.sh
       - name: step 12 installs only smartmontools, never upgrades
         run: bash provision/tests/test_12_smartmontools.sh
+      - name: step 13 smartd alert hook writes one file per alert (Kanboard #1873)
+        run: bash provision/tests/test_13_smartd_alerts.sh
